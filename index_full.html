@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>中藥飲片測驗</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    #herbImage { max-width: 200px; display: block; margin: 20px auto; border: 1px solid #ccc; padding: 5px; }
+    .options { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+    .options button { padding: 10px 15px; border: 1px solid #aaa; border-radius: 5px; background-color: #f9f9f9; cursor: pointer; }
+    .options button:hover { background-color: #e0e0e0; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>中藥飲片測驗</h1>
+  <img id="herbImage" alt="請辨識此飲片" />
+  <div class="options" id="options"></div>
+  <div id="result"></div>
+  <button onclick="nextQuestion()">下一題</button>
+
+  <script>
+    const herbs = [
+      {"id": "D2570", "name": "大黃", "category": "瀉下藥（攻下）"},
+      {"id": "D2589", "name": "山藥", "category": "補益藥（補氣）"},
+      {"id": "D2472", "name": "肉蓯蓉", "category": "補益藥（補陽）"},
+      {"id": "D2402", "name": "川楝子", "category": "理氣藥"},
+      {"id": "D2388", "name": "土茯苓", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2392", "name": "女貞子", "category": "補益藥（補陰）"},
+      {"id": "D2412", "name": "天門冬", "category": "補益藥（補陰）"},
+      {"id": "D2404", "name": "丹參", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2445", "name": "炒白朮", "category": "補益藥（補氣）"},
+      {"id": "D2448", "name": "白芥子", "category": "祛痰藥（溫化寒痰）"},
+      {"id": "D2454", "name": "白茅根", "category": "理血藥（止血）"},
+      {"id": "D2460", "name": "石斛", "category": "補益藥（補陰）"},
+      {"id": "D2435", "name": "半夏", "category": "祛痰藥（燥濕化痰）"},
+      {"id": "D2434", "name": "半枝蓮", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2427", "name": "仙鶴草", "category": "理血藥（止血）"},
+      {"id": "D2437", "name": "玉竹", "category": "補益藥（補陰）"},
+      {"id": "D2436", "name": "玄參", "category": "清熱藥（清熱涼血）"},
+      {"id": "D2457", "name": "白鮮皮", "category": "清熱藥（清熱燥濕）。"},
+      {"id": "D2466", "name": "地龍", "category": "平肝熄風藥"},
+      {"id": "D2465", "name": "地膚子", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2468", "name": "百合", "category": "補益藥（補陰）"},
+      {"id": "D2469", "name": "百部", "category": "祛痰藥（止咳平喘）"},
+      {"id": "D2473", "name": "艾葉", "category": "理血藥（止血）"},
+      {"id": "D2494", "name": "防風", "category": "解表藥（辛溫解表）"},
+      {"id": "D2491", "name": "赤芍", "category": "清熱藥（清熱涼血）"},
+      {"id": "D2403", "name": "牡丹皮", "category": "清熱藥（清熱涼血）"},
+      {"id": "D2492", "name": "車前子", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2493", "name": "辛夷", "category": "解表藥（辛溫解表）"},
+      {"id": "D2482", "name": "杜仲", "category": "補益藥（補陽）"},
+      {"id": "D2478", "name": "吳茱萸", "category": "溫裏藥"},
+      {"id": "D2539", "name": "何首烏", "category": "補益藥（補血）"},
+      {"id": "D2514", "name": "阿膠", "category": "補益藥（補血）"},
+      {"id": "D2509", "name": "知母", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2510", "name": "羌活", "category": "解表藥（辛溫解表）"},
+      {"id": "D2502", "name": "枇杷葉", "category": "祛痰藥（止咳平喘）"},
+      {"id": "D2503", "name": "板藍根", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2541", "name": "枳殼", "category": "理氣藥"},
+      {"id": "D2542", "name": "枳實", "category": "理氣藥"},
+      {"id": "D2547", "name": "桂枝", "category": "解表藥（辛溫解表）"},
+      {"id": "D2551", "name": "桑枝", "category": "祛濕藥（祛風濕）"},
+      {"id": "D2553", "name": "桑葉", "category": "解表藥（辛涼解表）"},
+      {"id": "D2552", "name": "桑寄生", "category": "祛濕藥（祛風濕）"},
+      {"id": "D2550", "name": "桑白皮", "category": "祛痰藥（止咳平喘）"},
+      {"id": "D2578", "name": "茯神", "category": "安神藥（養心安神）"},
+      {"id": "D2577", "name": "茯苓", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2544", "name": "夏枯草", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2567", "name": "荊芥", "category": "解表藥（辛溫解表）"},
+      {"id": "D2556", "name": "桃仁", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2573", "name": "骨碎補", "category": "補益藥（補陽）"},
+      {"id": "D2591", "name": "細辛", "category": "解表藥（辛溫解表）"},
+      {"id": "D2505", "name": "炒麥芽", "category": "消導藥"},
+      {"id": "D2595", "name": "連翹", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2597", "name": "陳皮", "category": "理氣藥"},
+      {"id": "D2523", "name": "淫羊藿", "category": "補益藥（補陽）"},
+      {"id": "D2599", "name": "魚腥草", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2624", "name": "黃精", "category": "補益藥（補陰）"},
+      {"id": "D2622", "name": "黃柏", "category": "清熱藥（清熱燥濕）"},
+      {"id": "D2630", "name": "葛根", "category": "解表藥（辛涼解表）"},
+      {"id": "D2415", "name": "天麻", "category": "平肝熄風藥"},
+      {"id": "D2629", "name": "當歸", "category": "補益藥（補血）"},
+      {"id": "D2632", "name": "補骨脂", "category": "補益藥（補陽）"},
+      {"id": "D2640", "name": "蒲公英", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2643", "name": "蒼耳子", "category": "解表藥（辛溫解表）"},
+      {"id": "D2642", "name": "蒼朮", "category": "祛濕藥（芳香化濕）"},
+      {"id": "D2657", "name": "澤瀉", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2660", "name": "龍骨", "category": "安神藥（養心安神）"},
+      {"id": "D2667", "name": "薏苡仁", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2676", "name": "雞血藤", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2672", "name": "蟬蛻", "category": "解表藥（辛涼解表）"},
+      {"id": "D2685", "name": "黨參", "category": "補益藥（補氣）"},
+      {"id": "D2689", "name": "鱉甲", "category": "補益藥（補陰）"},
+      {"id": "D2400", "name": "川芎", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2411", "name": "升麻", "category": "解表藥（辛涼解表）"},
+      {"id": "D2636", "name": "槐花", "category": "理血藥（止血）"},
+      {"id": "D2512", "name": "金銀花", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2618", "name": "菊花", "category": "解表藥（辛涼解表）"},
+      {"id": "D2634", "name": "鉤藤", "category": "平肝熄風藥"},
+      {"id": "D2648", "name": "熟地", "category": "補益藥（補血）"},
+      {"id": "D2447", "name": "白花蛇舌草", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2406", "name": "五味子", "category": "收澀藥"},
+      {"id": "D2555", "name": "柴胡", "category": "解表藥（辛涼解表）"},
+      {"id": "D2646", "name": "酸棗仁", "category": "安神藥（養心安神）"},
+      {"id": "D2385", "name": "三七", "category": "理血藥（止血）"},
+      {"id": "D2409", "name": "延胡索", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2481", "name": "杏仁", "category": "祛痰藥（止咳平喘）"},
+      {"id": "D2441", "name": "生甘草", "category": "補益藥（補氣）"},
+      {"id": "D2395", "name": "山茱萸", "category": "補益藥（補陰）"},
+      {"id": "D2531", "name": "紅花", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2687", "name": "續斷", "category": "補益藥（補陽）"},
+      {"id": "D2549", "name": "桔梗", "category": "祛痰藥（清化熱痰）"},
+      {"id": "D2433", "name": "北黃耆", "category": "補益藥（補氣）"},
+      {"id": "D2538", "name": "苦參根", "category": "清熱藥（清熱燥濕）"},
+      {"id": "D2579", "name": "乾薑", "category": "溫裏藥"},
+      {"id": "D2449", "name": "白芷", "category": "解表藥（辛溫解表）"},
+      {"id": "D2461", "name": "石膏", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2521", "name": "厚朴", "category": "理氣藥"},
+      {"id": "D2585", "name": "梔子", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2623", "name": "黃連", "category": "清熱藥（清熱燥濕）"},
+      {"id": "D2627", "name": "石菖蒲", "category": "開竅藥"},
+      {"id": "D2416", "name": "巴戟天", "category": "補益藥（補陽）"},
+      {"id": "D2451", "name": "白芨", "category": "理血藥（止血）"},
+      {"id": "D2452", "name": "白前", "category": "祛痰藥（溫化寒痰）"},
+      {"id": "D2560", "name": "烏梅", "category": "收澀藥"},
+      {"id": "D2612", "name": "紫花地丁", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2655", "name": "橘紅", "category": "理氣藥"},
+      {"id": "D2668", "name": "薤白", "category": "理氣藥"},
+      {"id": "D2679", "name": "藕節", "category": "理血藥（止血）"},
+      {"id": "D2397", "name": "山楂", "category": "消導藥"},
+      {"id": "D2398", "name": "川牛膝", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2423", "name": "火麻仁", "category": "瀉下藥（潤下）"},
+      {"id": "D2431", "name": "北沙參", "category": "補益藥（補陰）"},
+      {"id": "D2432", "name": "牛至(北茵陳)", "category": "解表藥（辛涼解表）"},
+      {"id": "D2443", "name": "生地黃", "category": "清熱藥（清熱涼血）"},
+      {"id": "D2504", "name": "炒白芍", "category": "補益藥（補血）"},
+      {"id": "D2666", "name": "炙殭蠶", "category": "平肝熄風藥"},
+      {"id": "D2485", "name": "決明子", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2558", "name": "浙貝", "category": "祛痰藥（清化熱痰）"},
+      {"id": "D2527", "name": "枸杞子", "category": "補益藥（補陰）"},
+      {"id": "D2515", "name": "炮附子", "category": "溫裏藥"},
+      {"id": "D2540", "name": "香附", "category": "理氣藥"},
+      {"id": "D2571", "name": "倒地蜈蚣", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2414", "name": "栝樓根", "category": "清熱藥（清熱瀉火）"},
+      {"id": "D2439", "name": "栝樓實", "category": "祛痰藥（燥濕化痰）"},
+      {"id": "D2583", "name": "敗醬草", "category": "清熱藥（清熱解毒）"},
+      {"id": "D2421", "name": "水炙麻黃", "category": "解表藥（辛溫解表）"},
+      {"id": "D2614", "name": "紫草", "category": "清熱藥（清熱涼血）"},
+      {"id": "D2684", "name": "紫蘇葉", "category": "解表藥（辛溫解表）"},
+      {"id": "D2645", "name": "炙遠志", "category": "安神藥（養心安神）"},
+      {"id": "D2654", "name": "豬苓", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2665", "name": "薄荷葉", "category": "解表藥（辛涼解表）"},
+      {"id": "D2513", "name": "金錢草", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2590", "name": "淮牛膝", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2602", "name": "麥冬", "category": "補益藥（補陰）"},
+      {"id": "D2605", "name": "綿茵陳", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2686", "name": "廣藿香", "category": "祛濕藥（芳香化濕）"},
+      {"id": "D2424", "name": "牛蒡子", "category": "理氣藥"},
+      {"id": "D2391", "name": "大腹皮", "category": "理氣藥"},
+      {"id": "D2619", "name": "菟絲子", "category": "補益藥（補陽）"},
+      {"id": "D2532", "name": "紅棗", "category": "補益藥（補氣）"},
+      {"id": "D2594", "name": "通草", "category": "祛濕藥（利水滲濕）"},
+      {"id": "D2459", "name": "石決明", "category": "平肝熄風藥"},
+      {"id": "D2488", "name": "皂角刺", "category": "理血藥（活血祛瘀）"},
+      {"id": "D2508", "name": "狗脊", "category": "補益藥（補陽）"},
+      {"id": "D2569", "name": "草豆蔻", "category": "祛濕藥（芳香化濕）"},
+      {"id": "D2548", "name": "桂圓(龍眼肉)", "category": "補益藥（補血）"},
+      {"id": "D2529", "name": "珍珠母", "category": "平肝熄風藥"},
+      {"id": "D2732", "name": "晉耆", "category": "補益藥（補氣）"},
+      {"id": "D2621", "name": "黃芩", "category": "清熱藥（清熱燥濕）"},
+      {"id": "D2664", "name": "膽南星", "category": "祛痰藥（燥濕化痰）"},
+      {"id": "D2506", "name": "炙甘草", "category": "補益藥(補氣藥)"},
+      {"id": "D2635", "name": "葶藶子", "category": "祛痰藥（清化熱痰）"},
+      {"id": "D2601", "name": "鹿茸", "category": "補益藥（補陽）"},
+      {"id": "D2734", "name": "冰片", "category": "開竅藥"},
+      {"id": "D2455", "name": "高麗參", "category": "補益藥（補氣）"},
+      {"id": "D2501", "name": "東洋參", "category": "補益藥（補氣）"},
+      {"id": "D2588", "name": "清華肉桂", "category": "溫裏藥"},
+      {"id": "D2600", "name": "鹿角膠", "category": "補益藥（補陽）"},
+      {"id": "D2631", "name": "蜈蚣", "category": "平肝熄風藥"},
+      {"id": "D2565", "name": "粉光參", "category": "補益藥（補氣）"},
+      {"id": "D2633", "name": "桂皮", "category": "溫裡藥"},
+      {"id": "D2487", "name": "牡犡", "category": "平肝熄風藥（平抑肝陽藥）"}
+    ];
+
+    let correctAnswer;
+
+    function nextQuestion() {
+      const optionsDiv = document.getElementById("options");
+      const resultDiv = document.getElementById("result");
+      optionsDiv.innerHTML = "";
+      resultDiv.textContent = "";
+
+      correctAnswer = herbs[Math.floor(Math.random() * herbs.length)];
+
+      const herbImage = document.getElementById("herbImage");
+      herbImage.src = `images/${correctAnswer.id}.jpg`;
+      herbImage.alt = correctAnswer.name;
+      herbImage.onerror = () => {
+        console.error("❌ 找不到圖片:", herbImage.src);
+        herbImage.src = "";
+        herbImage.alt = "圖片載入失敗";
+      };
+
+      let options = [correctAnswer];
+      while (options.length < 4) {
+        const randomHerb = herbs[Math.floor(Math.random() * herbs.length)];
+        if (!options.includes(randomHerb)) options.push(randomHerb);
+      }
+      options.sort(() => Math.random() - 0.5);
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = `${opt.name} (${opt.category})`;
+        btn.onclick = () => {
+          if (opt === correctAnswer) {
+            resultDiv.textContent = "✅ 答對了！";
+            resultDiv.style.color = "green";
+          } else {
+            resultDiv.textContent = `❌ 答錯了！正確答案是 ${correctAnswer.name} (${correctAnswer.category})`;
+            resultDiv.style.color = "red";
+          }
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    window.onload = nextQuestion;
+  </script>
+</body>
+</html>
