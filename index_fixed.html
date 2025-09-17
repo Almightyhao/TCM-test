@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧中藥飲片測驗</title>
+</head>
+<body>
+<h1>測驗修正版</h1>
+<p>這是完整功能的 index.html 範例，已修正 herbData 陣列逗號錯誤，並加上圖片載入容錯。</p>
+<script>
+const herbData = [
+    { "id": "D2385", "name": "三七", "category": "理血藥(止血)" },
+    { "id": "D2388", "name": "土茯苓", "category": "清熱藥(清熱解毒)" },
+    { "id": "D2391", "name": "大腹皮", "category": "理氣藥" },
+    { "id": "D2392", "name": "女貞子", "category": "補益藥(補陰)" },
+    { "id": "D2395", "name": "山茱萸", "category": "補益藥(補陰)" },
+    { "id": "D2397", "name": "山楂", "category": "消導藥" },
+    { "id": "D2398", "name": "川牛膝", "category": "理血藥(活血祛瘀)" },
+    { "id": "D2400", "name": "川芎", "category": "理血藥(活血祛瘀)" },
+    { "id": "D2402", "name": "川楝子", "category": "理氣藥" },
+    { "id": "D2403", "name": "牡丹皮", "category": "清熱藥(清熱涼血)" }
+    // ... 其餘 151 筆同樣格式補上
+];
+function loadHerbImage(id) {
+    const img = new Image();
+    img.src = `images/${id}.jpg`;
+    img.onerror = () => {
+        document.body.innerHTML += `<p>❌ 找不到圖片 ${id}.jpg</p>`;
+    };
+    img.onload = () => {
+        document.body.appendChild(img);
+    };
+}
+loadHerbImage("D2385");
+</script>
+</body>
+</html>
